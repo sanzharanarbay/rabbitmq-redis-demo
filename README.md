@@ -11,6 +11,7 @@
 
 Laravel RabbitMQ and Redis Demo Application
 - copy env.example to .env.
+- composer install.
 - php artisan key:generate.
 - php artisan migrate.
 - php artisan serve --port 8080.
