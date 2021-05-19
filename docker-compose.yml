@@ -1,0 +1,54 @@
+version: "3.7"
+services:
+  php:
+    build:
+      context: ./
+      dockerfile: sourcefiles/php-fpm/Dockerfile
+    image: laravel-image
+    container_name: testapp-php
+    restart: unless-stopped
+    working_dir: /var/www/html/testApp
+    volumes:
+      - ./:/var/www/html/testApp
+      - ./docker/php/local.ini:/usr/local/etc/php/conf.d/local.ini
+    networks:
+      - app-network
+
+  db:
+      image: postgres:10.1
+      container_name: testapp-db
+      restart: unless-stopped
+      tty: true
+      ports:
+        - "5432:5432"
+      environment:
+        POSTGRES_DB: ${DB_DATABASE}
+        POSTGRES_USER: ${DB_USERNAME}
+        POSTGRES_PASSWORD: ${DB_PASSWORD}
+        SERVICE_TAGS: dev
+        SERVICE_NAME: postgres
+      volumes:
+        - dbdata:/var/lib/postgresql/data
+        - ./sourcefiles/postgres/postgresql.conf:/usr/share/postgresql/postgresql.conf
+      networks:
+        - app-network
+
+  nginx:
+    image: nginx:alpine
+    container_name: testapp-nginx
+    restart: unless-stopped
+    ports:
+      - 8000:80
+    volumes:
+      - ./:/var/www/html/testApp
+      - ./sourcefiles/nginx/:/etc/nginx/conf.d/
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
+
+volumes:
+  dbdata:
+    driver: local
