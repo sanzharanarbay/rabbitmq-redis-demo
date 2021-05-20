@@ -1,34 +1,26 @@
 FROM php:7.4-fpm
 
-COPY ./composer.lock ./composer.json /var/www/html/testApp/
-
 # Set working directory
 WORKDIR /var/www/html/testApp
 
 # Install system dependencies
 RUN apt-get update && apt-get install -y \
-    build-essential \
     libpq-dev \
-    libpng-dev \
     libjpeg62-turbo-dev \
     libfreetype6-dev \
     locales \
     git \
     curl \
-    libpng-dev \
     libonig-dev \
     libxml2-dev \
     zip \
-    jpegoptim optipng pngquant gifsicle \
-    libicu-dev \
     libmagickwand-dev \
     libpng-dev \
     librabbitmq-dev \
-    libreadline-dev \
     libzip-dev \
-    zlib1g-dev \
     pkg-config \
     ssh-client \
+    vim \
     unzip
 
 # Clear cache
@@ -38,7 +30,7 @@ RUN apt-get clean && rm -rf /var/lib/apt/lists/*
 RUN docker-php-ext-install pdo pdo_pgsql mbstring exif pcntl bcmath gd sockets opcache intl
 
 # Install Redis extension
-RUN pecl install -o -f redis amqp imagick xdebug igbinary swoole && rm -rf /tmp/pear && docker-php-ext-enable amqp imagick xdebug igbinary redis swoole
+RUN pecl install -o -f redis amqp imagick  && rm -rf /tmp/pear && docker-php-ext-enable amqp imagick redis
 
 # Get latest Composer
 #COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
@@ -55,12 +47,28 @@ COPY ./ /var/www/html/testApp
 # Copy existing application directory permissions
 COPY --chown=www:www ./ /var/www/html/testApp
 
+#RUN chown -R www-data:www-data /var/www/html/testApp && chmod -R 775 /var/www/html/testApp
+
+
+# Update directory permissions
+RUN chown -R www-data:www-data \
+    /var/www/html/testApp/storage \
+    /var/www/html/testApp/bootstrap/cache
+
+# Install Composer Dependencies
+#RUN /bin/bash -c "php /usr/local/bin/composer install"
+RUN composer install --no-dev --no-interaction -o
+
+# Generate Laravel Key
+RUN php artisan key:generate
+
+# Clean Laravel Config
+RUN php artisan optimize
+RUN php artisan migrate
+
 # Change current user to www
 USER www
 
-#RUN chown -R www-data:www-data /var/www/docker-app
-
-#RUN chmod -R 755 /var/www/docker-app
 
 # Expose port 9000 and start php-fpm server
 EXPOSE 9000
