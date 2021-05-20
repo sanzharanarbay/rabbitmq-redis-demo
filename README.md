@@ -7,10 +7,22 @@
 <a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
 </p>
 
-## About Project
+## Install With Docker
+Laravel RabbitMQ and Redis Demo Application With Docker
+- copy .env.example .env .
+- docker-compose build .
+- docker-compose up -d .
+- docker-compose exec php bash
+- composer install
+- php artisan migrate
+- php artisan optimize
+- exit from container with command exit
+- docker-compose exec  rabbitmq enable rabbitmq_management
 
-Laravel RabbitMQ and Redis Demo Application
-- copy env.example to .env.
+## Install Without Docker
+
+Laravel RabbitMQ and Redis Demo Application Without Docker
+- copy .env.example to .env.
 - composer install.
 - php artisan key:generate.
 - php artisan migrate.

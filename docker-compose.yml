@@ -25,8 +25,6 @@ services:
         POSTGRES_DB: ${DB_DATABASE}
         POSTGRES_USER: ${DB_USERNAME}
         POSTGRES_PASSWORD: ${DB_PASSWORD}
-        SERVICE_TAGS: dev
-        SERVICE_NAME: postgres
       volumes:
         - dbdata:/var/lib/postgresql/data
         - ./sourcefiles/postgres/postgresql.conf:/usr/share/postgresql/postgresql.conf
@@ -46,43 +44,26 @@ services:
       - app-network
 
   rabbitmq:
-    image: rabbitmq
+    image: rabbitmq:3-management-alpine
     container_name: testapp-rabbitmq
-    restart: always
+    restart: unless-stopped
+    ports:
+      - 5672:5672
+      - 15672:15672
     environment:
       RABBITMQ_DEFAULT_USER: ${RABBITMQ_LOGIN}
       RABBITMQ_DEFAULT_PASSWORD: ${RABBITMQ_PASSWORD}
-      RABBITMQ_DEFAULT_VHOST: /
     volumes:
-      - "./tests/files/rootCA.pem:/rootCA.pem:ro"
-      - "./tests/files/rootCA.key:/rootCA.key:ro"
-    ports:
-      - 5671:5671
-      - 5672:5672
+      - ./sourcefiles/rabbitmq/etc/:/etc/rabbitmq/
+      - ./sourcefiles/rabbitmq/data/:/var/lib/rabbitmq/
+      - ./sourcefiles/rabbitmq/logs/:/var/log/rabbitmq/
     networks:
       - app-network
-
-  rabbitmq-management:
-    image: rabbitmq:management
-    container_name: testapp-rabbitmq-management
-    restart: always
-    environment:
-      RABBITMQ_DEFAULT_USER: ${RABBITMQ_LOGIN}
-      RABBITMQ_DEFAULT_PASSWORD: ${RABBITMQ_PASSWORD}
-      RABBITMQ_DEFAULT_VHOST: /
-    volumes:
-      - "./tests/files/rootCA.pem:/rootCA.pem:ro"
-      - "./tests/files/rootCA.key:/rootCA.key:ro"
-    ports:
-      - 15671:15671
-      - 15672:15672
-    networks:
-        - app-network
 
   redis:
     image: redis:4.0
     container_name: testapp_redis
-    restart: always
+    restart: unless-stopped
     ports:
       - "6382:6379"
     networks:
@@ -91,11 +72,11 @@ services:
   redis-commander:
     container_name: testapp-redis-commander
     image: rediscommander/redis-commander:latest
-    restart: always
+    restart: unless-stopped
+    ports:
+    - "8081:8081"
     environment:
       - REDIS_HOSTS=local:redis:6379
-    ports:
-      - "8081:8081"
     networks:
       - app-network
 
