@@ -20,16 +20,25 @@ RUN apt-get update && apt-get install -y \
     libxml2-dev \
     zip \
     jpegoptim optipng pngquant gifsicle \
+    libicu-dev \
+    libmagickwand-dev \
+    libpng-dev \
+    librabbitmq-dev \
+    libreadline-dev \
+    libzip-dev \
+    zlib1g-dev \
+    pkg-config \
+    ssh-client \
     unzip
 
 # Clear cache
 RUN apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Install PHP extensions
-RUN docker-php-ext-install pdo pdo_pgsql mbstring exif pcntl bcmath gd
+RUN docker-php-ext-install pdo pdo_pgsql mbstring exif pcntl bcmath gd sockets opcache intl
 
 # Install Redis extension
-RUN pecl install -o -f redis && rm -rf /tmp/pear && docker-php-ext-enable redis
+RUN pecl install -o -f redis amqp imagick xdebug igbinary swoole && rm -rf /tmp/pear && docker-php-ext-enable amqp imagick xdebug igbinary redis swoole
 
 # Get latest Composer
 #COPY --from=composer:latest /usr/bin/composer /usr/bin/composer

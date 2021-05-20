@@ -45,6 +45,60 @@ services:
     networks:
       - app-network
 
+  rabbitmq:
+    image: rabbitmq
+    container_name: testapp-rabbitmq
+    restart: always
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_LOGIN}
+      RABBITMQ_DEFAULT_PASSWORD: ${RABBITMQ_PASSWORD}
+      RABBITMQ_DEFAULT_VHOST: /
+    volumes:
+      - "./tests/files/rootCA.pem:/rootCA.pem:ro"
+      - "./tests/files/rootCA.key:/rootCA.key:ro"
+    ports:
+      - 5671:5671
+      - 5672:5672
+    networks:
+      - app-network
+
+  rabbitmq-management:
+    image: rabbitmq:management
+    container_name: testapp-rabbitmq-management
+    restart: always
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_LOGIN}
+      RABBITMQ_DEFAULT_PASSWORD: ${RABBITMQ_PASSWORD}
+      RABBITMQ_DEFAULT_VHOST: /
+    volumes:
+      - "./tests/files/rootCA.pem:/rootCA.pem:ro"
+      - "./tests/files/rootCA.key:/rootCA.key:ro"
+    ports:
+      - 15671:15671
+      - 15672:15672
+    networks:
+        - app-network
+
+  redis:
+    image: redis:4.0
+    container_name: testapp_redis
+    restart: always
+    ports:
+      - "6382:6379"
+    networks:
+      - app-network
+
+  redis-commander:
+    container_name: testapp-redis-commander
+    image: rediscommander/redis-commander:latest
+    restart: always
+    environment:
+      - REDIS_HOSTS=local:redis:6379
+    ports:
+      - "8081:8081"
+    networks:
+      - app-network
+
 networks:
   app-network:
     driver: bridge
