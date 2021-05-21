@@ -53,7 +53,8 @@ COPY --chown=www:www ./ /var/www/html/testApp
 # Update directory permissions
 RUN chown -R www-data:www-data \
     /var/www/html/testApp/storage \
-    /var/www/html/testApp/bootstrap/cache
+    /var/www/html/testApp/bootstrap/cache \
+    && chmod -R 775 /var/www/html/testApp/sourcefiles
 
 # Install Composer Dependencies
 #RUN /bin/bash -c "php /usr/local/bin/composer install"

@@ -55,7 +55,7 @@ services:
       RABBITMQ_DEFAULT_PASSWORD: ${RABBITMQ_PASSWORD}
     volumes:
       - ./sourcefiles/rabbitmq/etc/:/etc/rabbitmq/
-      - ./sourcefiles/rabbitmq/data/:/var/lib/rabbitmq/
+      - ./sourcefiles/rabbitmq/data/:/var/lib/rabbitmq/mnesia
       - ./sourcefiles/rabbitmq/logs/:/var/log/rabbitmq/
     networks:
       - app-network
