@@ -12,12 +12,18 @@ Laravel RabbitMQ and Redis Demo Application With Docker
 - copy .env.example .env .
 - docker-compose build .
 - docker-compose up -d .
-- docker-compose exec php bash
-- composer install
-- php artisan migrate
-- php artisan optimize
+- docker-compose exec php bash .
+- composer install .
+- php artisan optimize .
+- php artisan migrate .
 - exit from container with command exit
-- docker-compose exec  rabbitmq enable rabbitmq_management
+- docker exec testapp-rabbitmq rabbitmq-plugins enable rabbitmq_management .
+- http://localhost:8000/ - Laravel Application
+- http://localhost:15672/ - RabbitMQ Management
+- http://localhost:8081/ - Redis Commander
+- http://localhost:5050/ - PgAdmin 4
+- http://localhost:8087/ - PhpPgAdmin
+
 
 ## Install Without Docker
 
