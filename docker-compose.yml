@@ -80,6 +80,33 @@ services:
     networks:
       - app-network
 
+  pgadmin:
+    container_name: testapp_pgadmin4
+    image: dpage/pgadmin4
+    restart: unless-stopped
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@gmail.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+    ports:
+      - "5050:80"
+    networks:
+      - app-network
+
+  phppgadmin:
+    container_name: testapp_phppgadmin
+    image: dockage/phppgadmin:latest
+    environment:
+      - PHP_PG_ADMIN_SERVER_HOST=db
+      - PHP_PG_ADMIN_SERVER_PORT=5432
+      - PHP_PG_ADMIN_SERVER_DEFAULT_DB=postgres
+    restart: unless-stopped
+    ports:
+      - "8087:80"
+    links:
+      - db
+    networks:
+      - app-network
+
 networks:
   app-network:
     driver: bridge
